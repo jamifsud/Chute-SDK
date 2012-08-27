@@ -200,18 +200,18 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
 - (NSDictionary *) uniqueRepresentation {
     if([self alAsset]){
         ALAssetRepresentation *_representation = [[self alAsset] defaultRepresentation];
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           [[_representation url] absoluteString], @"filename", 
+                                           [NSString stringWithFormat:@"%d", [_representation size]], @"size", 
+                                           [NSString stringWithFormat:@"%d", [_representation size]], @"md5", 
+                                           nil];
         if([self objectID]){
-            return [NSDictionary dictionaryWithObjectsAndKeys:[[_representation url] absoluteString], @"filename", 
-                    [NSString stringWithFormat:@"%d", [_representation size]], @"size", 
-                    [NSString stringWithFormat:@"%d", [_representation size]], @"md5",
-                    [self objectID], @"id",
-                    [NSNumber numberWithInt:[self status]], @"status",
-                    nil];
+            [dictionary setObject:[self objectID] forKey:@"id"];
         }
-        return [NSDictionary dictionaryWithObjectsAndKeys:[[_representation url] absoluteString], @"filename", 
-                [NSString stringWithFormat:@"%d", [_representation size]], @"size", 
-                [NSString stringWithFormat:@"%d", [_representation size]], @"md5", 
-                nil];
+        if([self.alAsset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo){
+            [dictionary setObject:@"video" forKey:@"type"];
+        }
+        return [NSDictionary dictionaryWithDictionary:dictionary];
     }
     return nil;
 }
@@ -351,8 +351,27 @@ inBackgroundWithCompletion:(void (^)(UIImage *))aResponseBlock {
 - (id) initWithDictionary:(NSDictionary *) dictionary {
     self = [super initWithDictionary:dictionary];
     if (self) {
-        if([dictionary objectForKey:@"status"])
-            [self setStatus:[[dictionary objectForKey:@"status"] intValue]];
+        if([dictionary objectForKey:@"status"]){
+            if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"new"] == NSOrderedSame){
+                [self setStatus:GCAssetStateNew];
+            }
+            else if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"initialized"] == NSOrderedSame){
+                [self setStatus:GCAssetStateGettingToken];
+            }
+            else if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"uploaded"] == NSOrderedSame){
+                [self setStatus:GCAssetStateCompleting];
+            }
+            else if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"processing"] == NSOrderedSame){
+                [self setStatus:GCAssetStateCompleting];
+            }
+            else if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"complete"] == NSOrderedSame){
+                [self setStatus:GCAssetStateFinished];
+            }
+            else if([[dictionary objectForKey:@"status"] caseInsensitiveCompare:@"error"] == NSOrderedSame){
+                [self setStatus:GCAssetStateNew];
+            }
+            
+        }
         else
             [self setStatus:GCAssetStateFinished];
         if(![self objectID]){
