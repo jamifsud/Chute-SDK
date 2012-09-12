@@ -304,7 +304,7 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
     UIImage *image  = nil;
     
     if(data)
-        image = [UIImage imageWithData:data];
+        image = [[UIImage imageWithData:data] autorelease];
     return image;
 }
 
