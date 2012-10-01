@@ -40,6 +40,9 @@ typedef enum {
 
 @property (nonatomic, readonly) NSString *shortcut;
 
++ (GCResponse *)pageWithIndex:(int)index;
++ (void)pageWithIndex:(int)index inBackgroundWithCompletion:(GCResponseBlock) aResponseBlock;
+
 - (GCResponse *) assets;
 - (void) assetsInBackgroundWithCompletion:(GCResponseBlock) aResponseBlock;
 

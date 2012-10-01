@@ -41,6 +41,32 @@
 
 #pragma mark - Assets
 
++ (GCResponse *)pageWithIndex:(int)index {
+    NSString *_path;
+    if (index <= 1) {
+        _path = [[NSString alloc] initWithFormat:@"%@me/%@", API_URL, [self elementName]];
+    } else {
+        _path = [[NSString alloc] initWithFormat:@"%@me/%@?page=%d", API_URL, [self elementName], index];
+    }
+    GCRequest *gcRequest    = [[GCRequest alloc] init];
+    GCResponse *_response   = [[gcRequest getRequestWithPath:_path] retain];
+    
+    NSMutableArray *_result = [[NSMutableArray alloc] init];
+    for (NSDictionary *_dic in [_response object]) {
+        id _obj = [self objectWithDictionary:_dic];
+        [_result addObject:_obj];
+    }
+    [_response setObject:_result];
+    [_result release];
+    [gcRequest release];
+    [_path release];
+    return [_response autorelease];
+}
+
++ (void)pageWithIndex:(int)index inBackgroundWithCompletion:(GCResponseBlock) aResponseBlock {
+    DO_IN_BACKGROUND([self pageWithIndex:index], aResponseBlock);
+}
+
 - (GCResponse *) assets {
     NSString *_path         = [[NSString alloc] initWithFormat:@"%@%@/%@/assets", API_URL, [[self class] elementName], [self objectID]];
     GCRequest *gcRequest    = [[GCRequest alloc] init];
