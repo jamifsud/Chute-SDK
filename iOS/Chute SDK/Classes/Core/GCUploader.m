@@ -36,7 +36,7 @@ NSString * const GCUploaderFinished = @"GCUploaderFinished";
                 GCParcel *parcel = [GCParcel objectWithAssets:[NSArray arrayWithObject:temp] andChutes:[NSArray arrayWithObject:chute]];
                 [[GCUploader sharedUploader] addParcel:parcel];
             } failureBlock:^(NSError *error){
-                NSLog(@"finding asset failed");
+                NSLog(@"Finding asset failed.");
             }];
         }
     }];
@@ -62,7 +62,7 @@ NSString * const GCUploaderFinished = @"GCUploaderFinished";
                         [[GCUploader sharedUploader] addParcel:parcel];
                     }
                 } failureBlock:^(NSError *error){
-                    NSLog(@"finding asset failed");
+                    NSLog(@"Finding asset failed.");
                 }];
             }
         }];
@@ -78,6 +78,12 @@ NSString * const GCUploaderFinished = @"GCUploaderFinished";
 
 + (void) uploadArrayOfAssets:(NSArray*)assets toChute:(GCChute*)chute{
     GCParcel *parcel = [GCParcel objectWithAssets:assets andChutes:[NSArray arrayWithObject:chute]];
+    [[GCUploader sharedUploader] addParcel:parcel];
+}
+
++ (void) uploadArrayOfAssets:(NSArray *)assets toChute:(GCChute *)chute withCompletitionBlock:(GCParcelUploadCompletitionBlock)completitionBlock {
+    GCParcel *parcel = [GCParcel objectWithAssets:assets andChutes:[NSArray arrayWithObject:chute]];
+    [parcel setCompletitionBlock:[completitionBlock copy]];
     [[GCUploader sharedUploader] addParcel:parcel];
 }
 
@@ -139,14 +145,17 @@ NSString * const GCUploaderFinished = @"GCUploaderFinished";
 
 - (void) backupQueueToUserDefaults{
     NSMutableArray *array = [NSMutableArray array];
-    for(GCParcel *parcel in self.queue){
-        NSDictionary *dictionary = [parcel dictionaryRepresentation];
+    NSArray *enumerationArray = [self.queue copy];
+    
+    [enumerationArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary *dictionary = [obj dictionaryRepresentation];
         if(dictionary){
             [array addObject:dictionary];
         }
-    }
+    }];
     [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"GCUPLOADQUEUE"];
 }
+
 - (void) loadQueueFromUserDefaults{
     NSArray *array = [NSArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"GCUPLOADQUEUE"]];
     [self setQueue:[NSMutableArray array]];
@@ -158,6 +167,22 @@ NSString * const GCUploaderFinished = @"GCUploaderFinished";
 }
 
 - (void) addParcel:(GCParcel *) _parcel {
+    [self.queue addObject:_parcel];
+    [self backupQueueToUserDefaults];
+    [self processQueue];
+}
+
+- (void) addParcel:(GCParcel *) _parcel withCompletionBlock:(GCParcelUploadCompletitionBlock)completitionBlock {
+    [_parcel setCompletitionBlock:completitionBlock];
+    [self.queue addObject:_parcel];
+    [self backupQueueToUserDefaults];
+    [self processQueue];
+}
+
+- (void)addParcel:(GCParcel *)_parcel withStartedBlock:(GCParcelUploadStartedBlock)startedBlock finishedBlock:(GCParcelUploadCompletitionBlock)completitionBlock failedBlock:(GCParcelUploadFailedBlock)failedBlock {
+    [_parcel setStartedBlock:startedBlock];
+    [_parcel setCompletitionBlock:completitionBlock];
+    [_parcel setFailedBlock:failedBlock];
     [self.queue addObject:_parcel];
     [self backupQueueToUserDefaults];
     [self processQueue];

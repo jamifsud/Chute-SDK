@@ -61,6 +61,8 @@
     [_request setRequestMethod:method];
     [_request startSynchronous];
     NSLog(@"POST BODY: %@",[_request postBody]);
+//    NSLog(@"RESPONSE: %@", [NSJSONSerialization JSONObjectWithData:[_request responseData] options:NSJSONWritingPrettyPrinted error:nil]);
+    
     
     GCResponse *_result = [[[GCResponse alloc] initWithRequest:_request] autorelease];
     return _result;

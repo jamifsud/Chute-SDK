@@ -23,6 +23,9 @@ NSString * const GCUploaderFinished;
 + (GCUploader *)sharedUploader;
 
 - (void) addParcel:(GCParcel *) _parcel;
+- (void) addParcel:(GCParcel *) _parcel withCompletionBlock:(GCParcelUploadCompletitionBlock)completitionBlock;
+- (void)addParcel:(GCParcel *)_parcel withStartedBlock:(GCParcelUploadStartedBlock)startedBlock finishedBlock:(GCParcelUploadCompletitionBlock)completitionBlock failedBlock:(GCParcelUploadFailedBlock)failedBlock;
+
 - (void) removeParcel:(GCParcel *) _parcel;
 - (int) queueAssetCount;
 - (int) queueParcelCount;
@@ -34,5 +37,6 @@ NSString * const GCUploaderFinished;
 + (void) uploadArrayOfImages:(NSArray*)images toChute:(GCChute*)chute;
 + (void) uploadAsset:(GCAsset*)asset toChute:(GCChute*)chute;
 + (void) uploadArrayOfAssets:(NSArray*)assets toChute:(GCChute*)chute;
++ (void) uploadArrayOfAssets:(NSArray *)assets toChute:(GCChute *)chute withCompletitionBlock:(GCParcelUploadCompletitionBlock)completitionBlock;
 
 @end

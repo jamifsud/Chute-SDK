@@ -67,8 +67,15 @@
     
     if(newImage == nil) NSLog(@"could not scale image");
     
+    // handle rotating the image correctly
     
-    return newImage ;
+    if (newImage.imageOrientation == UIImageOrientationUp) return newImage;
+    
+    UIGraphicsBeginImageContextWithOptions(newImage.size, NO, newImage.scale);
+    [newImage drawInRect:(CGRect){0, 0, newImage.size}];
+    UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return normalizedImage;
 }
 
 @end;

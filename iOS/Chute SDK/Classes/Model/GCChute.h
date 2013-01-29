@@ -5,6 +5,8 @@
 //  Copyright 2011 Chute Corporation. All rights reserved.
 //
 
+#import "GCResource.h"
+
 typedef enum {
     GCPermissionTypePrivate = 0,
     GCPermissionTypeMembers,

@@ -25,7 +25,10 @@ typedef enum {
     GCAssetStateFinished
 } GCAssetStatus;
 
-@interface GCAsset : GCResource
+@interface GCAsset : GCResource {
+    NSString *_uniqueURLString;
+}
+
 
 @property (nonatomic, retain) ALAsset *alAsset;
 @property (nonatomic, retain) UIImage *thumbnail;
@@ -37,6 +40,7 @@ typedef enum {
 
 - (NSDictionary *) uniqueRepresentation;
 - (NSString *) uniqueURL;
+- (void)setUniqueURL:(NSString *)uniqueURL;
 
 - (NSString*)urlStringForImageWithWidth:(NSUInteger)width andHeight:(NSUInteger)height;
 

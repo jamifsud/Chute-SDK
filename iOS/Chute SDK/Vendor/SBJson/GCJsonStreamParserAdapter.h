@@ -119,8 +119,8 @@ typedef enum {
 @private
 	id<GCJsonStreamParserAdapterDelegate> delegate;
 	NSUInteger levelsToSkip, depth;
-	__weak NSMutableArray *array;
-	__weak NSMutableDictionary *dict;
+	/*__weak*/ NSMutableArray *array;
+	/*__weak*/ NSMutableDictionary *dict;
 	NSMutableArray *keyStack;
 	NSMutableArray *stack;
 	

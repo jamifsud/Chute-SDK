@@ -5,6 +5,8 @@
 //  Copyright 2011 Chute Corporation. All rights reserved.
 //
 
+#import "GCAsset.h"
+
 NSString * const GCParcelFinishedUploading;
 NSString * const GCParcelAssetsChanged;
 NSString * const GCParcelNoUploads;
@@ -15,6 +17,10 @@ typedef enum {
     GCParcelStatusDone,
     GCParcelStatusFailed
 } GCParcelStatus;
+
+typedef void (^ GCParcelUploadStartedBlock)(GCAsset *asset);
+typedef void (^ GCParcelUploadCompletitionBlock)(GCAsset *asset);
+typedef void (^ GCParcelUploadFailedBlock)(GCAsset *asset);
 
 @interface GCParcel : GCResource
 
@@ -28,6 +34,10 @@ typedef enum {
 
 @property (nonatomic, assign) id<NSObject> delegate;
 @property (nonatomic, assign) SEL completionSelector;
+@property (nonatomic, copy) GCParcelUploadStartedBlock startedBlock;
+@property (nonatomic, copy) GCParcelUploadCompletitionBlock completitionBlock;
+@property (nonatomic, copy) GCParcelUploadFailedBlock failedBlock;
+
 
 + (id) objectWithAssets:(NSArray *) _assets andChutes:(NSArray *) _chutes;
 + (id) objectWithAssets:(NSArray *) _assets andChutes:(NSArray *) _chutes andMetaData:(NSDictionary*)_metaData;

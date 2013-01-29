@@ -103,12 +103,12 @@ typedef enum {
 	id<GCJsonStreamParserDelegate> delegate;
 	GCJsonTokeniser *tokeniser;
     NSMutableArray *stateStack;
-	__weak GCJsonStreamParserState *state;
+	/*__weak*/ GCJsonStreamParserState *state;
 	NSUInteger maxDepth;
 	NSString *error;
 }
 
-@property (nonatomic, assign) __weak GCJsonStreamParserState *state; // Private
+@property (nonatomic, assign) /*__weak*/ GCJsonStreamParserState *state; // Private
 @property (nonatomic, readonly, retain) NSMutableArray *stateStack; // Private
 
 /**

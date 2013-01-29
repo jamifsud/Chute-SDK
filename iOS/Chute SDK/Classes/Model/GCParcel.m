@@ -7,7 +7,6 @@
 
 #import "GCResource.h"
 #import "GCParcel.h"
-#import "GCAsset.h"
 #import "GCChute.h"
 #import "GCUser.h"
 #import "GCAccount.h"
@@ -19,6 +18,8 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
 
 @implementation GCParcel
 
+static dispatch_queue_t serialQueue;
+
 @synthesize status;
 @synthesize assets;
 @synthesize chutes;
@@ -26,6 +27,7 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
 
 @synthesize delegate;
 @synthesize completionSelector;
+@synthesize completitionBlock;
 
 @synthesize assetCount;
 @synthesize completedAssetCount;
@@ -164,8 +166,15 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
 
 - (BOOL) uploadAssetToS3:(GCAsset *) anAsset withToken:(NSDictionary *) _token {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    __block NSMutableData* _imageData;
     
-    __block NSMutableData* _imageData = [UIImageJPEGRepresentation([UIImage imageWithCGImage:[[anAsset.alAsset defaultRepresentation] fullResolutionImage] scale:1 orientation:[[anAsset.alAsset valueForProperty:ALAssetPropertyOrientation] intValue]], 1.0) mutableCopy];
+    if ([anAsset alAsset]) {
+        _imageData = [UIImageJPEGRepresentation([UIImage imageWithCGImage:[[anAsset.alAsset defaultRepresentation] fullResolutionImage] scale:1 orientation:[[anAsset.alAsset valueForProperty:ALAssetPropertyOrientation] intValue]], 1.0) mutableCopy];
+    }
+    else {
+        _imageData =  [UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:[anAsset uniqueURL]], 1.0) mutableCopy];
+    }
+    
     if(!_imageData && [anAsset objectID]){
         [pool release];
         NSString *assetURL = NULL;
@@ -207,6 +216,9 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
             }
             else {
                 [anAsset setStatus:GCAssetStateUploadingToS3Failed];
+                if ([self failedBlock]) {
+                    [self failedBlock](anAsset);
+                }
             }
         } failureBlock:^(NSError* error){
         }];
@@ -236,6 +248,9 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
         }
         else {
             [anAsset setStatus:GCAssetStateUploadingToS3Failed];
+//            if ([self failedBlock]) {
+//                [self failedBlock](anAsset);
+//            }
         }
         return _response;
     }
@@ -247,10 +262,18 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
     GCResponse *response = [[gcRequest getRequestWithPath:_path] retain];
     
     if ([response isSuccessful]) {
+        if ([self completitionBlock] != nil) {
+            GCAsset *responseAsset = [(NSDictionary *)[response data] objectForKey:@"asset"];
+            [self completitionBlock](responseAsset);
+            [self.completitionBlock release];
+        }
         [anAsset setStatus:GCAssetStateFinished];
     }
     else {
         [anAsset setStatus:GCAssetStateCompletingFailed];
+        if ([self failedBlock]) {
+            [self failedBlock](anAsset);
+        }
     }
     
     [gcRequest release];
@@ -298,6 +321,10 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
     //Create Parcel with Assets and Chutes
     if(![self objectID]){
         NSDictionary *_parcel = [[[self newParcel] rawResponse] JSONValue];
+        if (_parcel == nil && [self failedBlock]) {
+            [self failedBlock](nil);
+            return;
+        }
         for (NSString *key in [_parcel allKeys]) {
             [self setObject:[_parcel objectForKey:key] forKey:key];
         }
@@ -307,16 +334,22 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
     [self removeUploadedAssets];
     if(status == GCParcelStatusDone)
         return;
-    dispatch_queue_t queue;
-    queue = dispatch_queue_create("com.sharedRoll.queue", NULL);
-    
+
+//    dispatch_queue_t queue;
+//    queue = dispatch_queue_create("com.sharedRoll.queue", NULL);
     //Start loop of assets
     for (GCAsset *_asset in assets) {
+        
         if ([_asset status] == GCAssetStateFinished) {
             continue;
         }
         
-        dispatch_async(queue, ^(void) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            serialQueue = dispatch_queue_create("com.kex.serialqueue", NULL);
+        });
+        
+        dispatch_async(serialQueue, ^(void) {
             [_asset setStatus:GCAssetStateGettingToken];
             
             //Generate New token for each asset
@@ -325,12 +358,26 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
                 [self removeAsset:_asset];
                 return;
             }
-            
+
             while (![_response isSuccessful]) {
                 [_asset setStatus:GCAssetStateGettingTokenFailed];
+                if ([self failedBlock]) {
+                    [self failedBlock](_asset);
+                }
                 _response = [self tokenForAsset:_asset];
             }
             
+            //<KXComment> Send the data of the callback for the UI
+            if ([_response isSuccessful]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([self startedBlock] != nil) {
+                        NSDictionary *responseDictionary = [_response data];
+                        GCAsset *responseAsset = [[GCAsset alloc] initWithDictionary:responseDictionary];
+                        [self startedBlock](responseAsset);
+                    }
+                });                
+            }
+        
             //Upload using the token to S3
             NSDictionary *_token = [_response data];
             [_asset setStatus:GCAssetStateUploadingToS3];
@@ -394,6 +441,7 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
         chutes = [[NSArray arrayWithArray:_chutes] retain];
         [self setAssetCount:[assets count]];
         [self setStatus:GCParcelStatusNew];
+        [self setCompletitionBlock:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUploadQueue:) name:GCAssetUploadComplete object:nil];
     }
     return self;
@@ -417,8 +465,11 @@ NSString * const GCParcelNoUploads   = @"GCParcelNoUploads";
 }
 
 - (id) initWithDictionary:(NSDictionary *) dictionary {
+    
     self = [self init];
+    
     if(self){
+        
         for (NSString *key in [dictionary allKeys]) {
             id _obj;
             if ([key isEqualToString:@"user"]) {

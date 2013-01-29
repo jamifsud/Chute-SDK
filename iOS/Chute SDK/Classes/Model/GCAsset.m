@@ -198,13 +198,19 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
 //
 // Returns a NSDictionary with filename, size and md5 properties.  If the asset has them it also includes an id and status property.
 - (NSDictionary *) uniqueRepresentation {
-    if([self alAsset]){
-        ALAssetRepresentation *_representation = [[self alAsset] defaultRepresentation];
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                           [[_representation url] absoluteString], @"filename", 
-                                           [NSString stringWithFormat:@"%d", [_representation size]], @"size", 
-                                           [NSString stringWithFormat:@"%d", [_representation size]], @"md5", 
-                                           nil];
+    if([self alAsset] || _uniqueURLString){
+        
+        NSNumber *size;
+        
+        if ([self alAsset])
+            size = @([[[self alAsset] defaultRepresentation] size]);
+        else if (_uniqueURLString)
+            size = @([UIImageJPEGRepresentation([UIImage imageWithContentsOfFile:_uniqueURLString], 1.0) length]);
+        else
+            size = 0;
+        
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:@{@"filename":[self uniqueURL], @"size":size, @"md5":size}];
+        
         if([self objectID]){
             [dictionary setObject:[self objectID] forKey:@"id"];
         }
@@ -220,12 +226,21 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
 //
 // Returns the filepath as given by the url of the alAsset
 - (NSString *) uniqueURL {
-    return [[[[self alAsset] defaultRepresentation] url] absoluteString];
+    if (alAsset) {
+        return [[[[self alAsset] defaultRepresentation] url] absoluteString];
+    }
+    else {
+        return _uniqueURLString;
+    }
+}
+
+- (void)setUniqueURL:(NSString *)uniqueURL {
+    _uniqueURLString = uniqueURL;
 }
 
 #pragma mark - Upload
 
-- (void) upload {
+- (void)upload {
     [[GCAssetUploader sharedUploader] addAsset:self];
 }
 
@@ -233,7 +248,7 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
 // Public: Initializes a UIImage with a thumbnail for the Asset
 //
 // Returns a UIImage initialized with a thumbnail of the image, either from the server or the local copy if it has an alAsset.
-- (UIImage *) thumbnail {
+- (UIImage *)thumbnail {
     if ([self alAsset]) {
         return [UIImage imageWithCGImage:[[self alAsset] thumbnail]];
     }

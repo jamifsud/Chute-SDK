@@ -86,13 +86,13 @@
 @private
 	NSString *error;
     NSMutableArray *stateStack;
-    __weak GCJsonStreamWriterState *state;
+    /*__weak*/ GCJsonStreamWriterState *state;
     id<GCJsonStreamWriterDelegate> delegate;
 	NSUInteger maxDepth;
     BOOL sortKeys, humanReadable;
 }
 
-@property (nonatomic, assign) __weak GCJsonStreamWriterState *state; // Internal
+@property (nonatomic, assign) /*__weak*/ GCJsonStreamWriterState *state; // Internal
 @property (nonatomic, readonly, retain) NSMutableArray *stateStack; // Internal 
 
 /**

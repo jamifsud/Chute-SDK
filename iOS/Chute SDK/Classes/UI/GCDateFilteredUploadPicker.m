@@ -53,7 +53,7 @@
         NSDate *d2 = [obj2 createdAt];
         if(!d1 || !d2)
             return NSOrderedDescending;
-        return [d2 compare:d1];
+        return (int)[d2 compare:d1];
     }];
     return array;
 }
@@ -182,7 +182,7 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
--(void)loadImagesWithCompletionBlock:(GCBasicBlock)responseBlock{
+-(void)loadImagesWithCompletitionBlock:(GCBasicBlock)responseBlock{
     NSMutableSet *set = [NSMutableSet set];
     void (^assetEnumerator)(ALAsset *, NSUInteger, BOOL *) = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
         if(result != NULL){
