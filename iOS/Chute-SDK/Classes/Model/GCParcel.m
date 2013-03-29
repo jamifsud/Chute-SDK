@@ -193,7 +193,7 @@ static dispatch_queue_t serialQueue;
             NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
             _imageData = [UIImageJPEGRepresentation([UIImage imageWithCGImage:[[_alasset defaultRepresentation] fullResolutionImage] scale:1 orientation:[[anAsset.alAsset valueForProperty:ALAssetPropertyOrientation] intValue]], 1.0) mutableCopy];
             
-            ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[_token objectForKey:@"upload_url"]]];
+            GC_ASIHTTPRequest *request = [GC_ASIHTTPRequest requestWithURL:[NSURL URLWithString:[_token objectForKey:@"upload_url"]]];
             [request setUploadProgressDelegate:anAsset];
             [request setRequestMethod:@"PUT"];
             [request setPostBody:_imageData];
@@ -225,7 +225,7 @@ static dispatch_queue_t serialQueue;
         return _response;
     }else{
         
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:[_token objectForKey:@"upload_url"]]];
+        GC_ASIHTTPRequest *request = [GC_ASIHTTPRequest requestWithURL:[NSURL URLWithString:[_token objectForKey:@"upload_url"]]];
         [request setUploadProgressDelegate:anAsset];
         [request setRequestMethod:@"PUT"];
         [request setPostBody:_imageData];

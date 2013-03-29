@@ -8,6 +8,7 @@
 #import "GCAsset.h"
 #import "GCAssetUploader.h"
 #import "GC_UIImage+Extras.h"
+#import "NSString+URLEncode.h"
 
 NSString * const GCAssetStatusChanged   = @"GCAssetStatusChanged";
 NSString * const GCAssetProgressChanged = @"GCAssetProgressChanged";
@@ -194,6 +195,8 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
     DO_IN_BACKGROUND([self addComment:_comment], aResponseBlock);
 }
 
+#pragma mark - Asset's Methods for management it's inner state
+
 // Public: Creates a representation of the Asset that can uniquely identify it for the device when making server requests.
 //
 // Returns a NSDictionary with filename, size and md5 properties.  If the asset has them it also includes an id and status property.
@@ -236,6 +239,29 @@ NSString * const GCAssetUploadComplete = @"GCAssetUploadComplete";
 
 - (void)setUniqueURL:(NSString *)uniqueURL {
     _uniqueURLString = uniqueURL;
+}
+
+- (GCResponse *)updateName:(NSString *)name {
+    
+    NSString *path = [[NSString alloc] initWithFormat:@"%@chutes/%@/assets/%@/caption?data=%@", API_URL, [self parentID], [self objectID], [name URLEncoded]];
+    
+    GCRequest *gcRequest = [[GCRequest alloc] init];
+    
+    return [gcRequest postRequestWithPath:path andParams:nil];
+}
+
+- (void)updateName:(NSString *)name WithCompletitionBlock:(void (^)(GCResponse *response))block {
+
+    
+    NSString *path = [[NSString alloc] initWithFormat:@"%@chutes/%@/assets/%@/caption?data=%@", API_URL, [self parentID], [self objectID], [name URLEncoded]];
+    
+    GCRequest *gcRequest = [[GCRequest alloc] init];
+    
+    [gcRequest postRequestInBackgroundWithPath:path andParams:nil withResponse:^(GCResponse *response) {
+        
+        block(response);
+        
+    }];
 }
 
 #pragma mark - Upload

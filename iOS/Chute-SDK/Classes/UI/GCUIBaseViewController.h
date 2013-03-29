@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "NSDictionary+QueryString.h"
 
-@class MBProgressHUD;
+@class GC_MBProgressHUD;
 
 @interface GCUIBaseViewController : UIViewController <UIAlertViewDelegate> {
-    MBProgressHUD *HUD;
+    GC_MBProgressHUD *HUD;
     NSUInteger HUDCount;
     
     UIAlertView *_alert;

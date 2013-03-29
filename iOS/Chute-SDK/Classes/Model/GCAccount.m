@@ -9,7 +9,7 @@
 #import "GCRequest.h"
 #import "GCJson.h"
 #import "GCConstants.h"
-#import "ASIHTTPRequest.h"
+#import "GC_ASIHTTPRequest.h"
 #import "NSDictionary+QueryString.h"
 #import "GCAsset.h"
 #import "GCParcel.h"
@@ -373,7 +373,7 @@ static GCAccount *sharedAccountManager = nil;
         [params setValue:accessCode forKey:@"code"];
     }
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:kOAuthTokenURL]];
+    GC_ASIHTTPRequest *request = [GC_ASIHTTPRequest requestWithURL:[NSURL URLWithString:kOAuthTokenURL]];
     [request setRequestMethod:@"POST"];
     [request addRequestHeader:@"Content-Type" value:@"application/x-www-form-urlencoded"];
     [request appendPostData:[[params stringWithFormEncodedComponents] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -452,7 +452,7 @@ static GCAccount *sharedAccountManager = nil;
     [prefs setObject:nil forKey:@"id"];
     [prefs setObject:nil forKey:@"accounts"];
     [prefs synchronize];
-    [ASIHTTPRequest setSessionCookies:nil];
+    [GC_ASIHTTPRequest setSessionCookies:nil];
     if (_accessToken) {
         [_accessToken release], _accessToken = nil;
     }

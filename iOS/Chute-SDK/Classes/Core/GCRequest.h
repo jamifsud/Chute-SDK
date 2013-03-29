@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "GCMacros.h"
 #import "GCConstants.h"
-#import "ASIHTTPRequest.h"
+#import "GC_ASIHTTPRequest.h"
 #import "GCJson.h"
 #import "GCResponse.h"
 #import "GCError.h"

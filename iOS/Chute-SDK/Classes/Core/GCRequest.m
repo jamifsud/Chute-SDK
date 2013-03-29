@@ -6,8 +6,8 @@
 //
 
 #import "GCRequest.h"
-#import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
+#import "GC_ASIHTTPRequest.h"
+#import "GC_ASIFormDataRequest.h"
 #import "GCAccount.h"
 
 @implementation GCRequest
@@ -24,7 +24,7 @@
 }
 
 - (GCResponse *)getRequestWithPath:(NSString *)path {
-    ASIHTTPRequest *_request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:path]];    
+    GC_ASIHTTPRequest *_request = [GC_ASIHTTPRequest requestWithURL:[NSURL URLWithString:path]];    
     [_request setRequestHeaders:[self headers]];
     [_request setTimeOutSeconds:300.0];
     [_request startSynchronous];
@@ -36,7 +36,7 @@
                           andParams:(NSMutableDictionary *)params
                           andMethod:(NSString *)method {
     
-    ASIFormDataRequest *_request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:path]];
+    GC_ASIFormDataRequest *_request = [GC_ASIFormDataRequest requestWithURL:[NSURL URLWithString:path]];
     [_request setRequestHeaders:[self headers]];
     if(params){
         if ([params objectForKey:@"headers"]) {

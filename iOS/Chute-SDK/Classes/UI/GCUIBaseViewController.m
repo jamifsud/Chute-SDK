@@ -5,10 +5,10 @@
 //
 
 #import "GCUIBaseViewController.h"
-#import "MBProgressHUD.h"
+#import "GC_MBProgressHUD.h"
 #import "GCJson.h"
 #import "GCConstants.h"
-#import "ASIHTTPRequest.h"
+#import "GC_ASIHTTPRequest.h"
 #import "GCAccount.h"
 
 @implementation GCUIBaseViewController
@@ -31,7 +31,7 @@
 	if (!IS_NULL(HUD))
 		return;
     
-    HUD = [[MBProgressHUD alloc] initWithView:self.view];
+    HUD = [[GC_MBProgressHUD alloc] initWithView:self.view];
 	[self.view addSubview:HUD];
 	HUD.labelText = title;
     HUD.opacity = opacity;

@@ -42,6 +42,9 @@ typedef enum {
 - (NSString *) uniqueURL;
 - (void)setUniqueURL:(NSString *)uniqueURL;
 
+- (GCResponse *)updateName:(NSString *)name;
+- (void)updateName:(NSString *)name WithCompletitionBlock:(void (^)(GCResponse *response))block;
+
 - (NSString*)urlStringForImageWithWidth:(NSUInteger)width andHeight:(NSUInteger)height;
 
 - (UIImage *)imageForWidth:(NSUInteger)width andHeight:(NSUInteger)height;

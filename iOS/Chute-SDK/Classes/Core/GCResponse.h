@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "GCError.h"
-#import "ASIHTTPRequest.h"
+#import "GC_ASIHTTPRequest.h"
 #import "GCJson.h"
 #import "GCMacros.h"
 
@@ -20,7 +20,7 @@
 @property (nonatomic, retain) id data;
 @property (nonatomic, retain) NSString *requestURL;
 
-- (id) initWithRequest:(ASIHTTPRequest *) request;
+- (id) initWithRequest:(GC_ASIHTTPRequest *) request;
 - (BOOL) isSuccessful;
 
 @end

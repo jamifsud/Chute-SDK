@@ -51,7 +51,7 @@
         return data;
 }
 
-- (id) initWithRequest:(ASIHTTPRequest *) request {
+- (id) initWithRequest:(GC_ASIHTTPRequest *) request {
     self = [super init];
     
     if (self) {   
