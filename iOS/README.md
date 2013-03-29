@@ -1,6 +1,15 @@
 Setup
 ====
 
+##Add Chute-SDK as a Subproject
+
+There are some things to be set in the super-project if someone uses Chute-SDK as a subproject & that's:
+
+* Add the headers in Project Navigator -> Your Target -> Build Settings -> User Search Header Paths;
+* Add -ObjC & -all_load compiler flags for Project Navigator -> Your Target ->Build Settings -> Other Linker Flags;
+* Add the .a file in Project Navigator -> Your Target -> Build Phases -> Target Dependancies & Link Binary with Libraries;
+
+
 ##Frameworks
 
 You must link the following libraries in your project to use the SDK
