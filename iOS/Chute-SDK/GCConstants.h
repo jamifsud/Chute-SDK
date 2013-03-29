@@ -36,12 +36,8 @@
 #define kOAuthCallbackURL               @"http://getchute.com/oauth/callback"
 #define kOAuthCallbackRelativeURL       @"/oauth/callback"
 
-#define kOAuthAppID                     @"50f1c63b6e29315150000358"
-#define kOAuthAppSecret                 @"9185704a6367f75984954c64797c4b81ab7a88116d690a16ef83dc4ac64a7425"
-
-#define kOAuthAppID                     @"5086e3f38a9eb0132e000013"
-#define kOAuthAppSecret                 @"2148b0d471314d3214e4247e293b4077f7fdf8477dc1c911098d4ac871228331"
-#define kChuteID                        @"2307238"
+#define kOAuthAppID                     @"YOUR_APP_ID"
+#define kOAuthAppSecret                 @"YOUR_APP_SECRET"
 
 #define kOAuthPermissions               @"all_resources manage_resources profile resources"
 
