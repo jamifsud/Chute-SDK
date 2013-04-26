@@ -80,6 +80,8 @@ public class GCAuthenticationActivity extends AccountAuthenticatorActivity {
 	webViewAuthentication.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
 	webViewAuthentication.clearCache(true);
+	webViewAuthentication.clearHistory();
+	android.webkit.CookieManager.getInstance().removeAllCookie();
 	final WebSettings mWebSettings = webViewAuthentication.getSettings();
 	mWebSettings.setSavePassword(false);
 	mWebSettings.setSaveFormData(false);

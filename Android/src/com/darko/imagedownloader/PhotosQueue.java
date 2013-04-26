@@ -31,6 +31,8 @@ import com.darko.imagedownloader.queue.DequeStrategy;
 import com.darko.imagedownloader.queue.QueueStrategy;
 import com.darko.imagedownloader.queue.StackStrategy;
 
+import com.darko.imagedownloader.ImageLoaderListener;
+
 /**
  * @author darko.grozdanovski
  */
@@ -73,11 +75,14 @@ public class PhotosQueue {
 		public String url;
 		public ImageView imageView;
 		public final int photoSizeInPixels;
+		public final ImageLoaderListener listener;
 
-		public PhotoToLoad(String u, ImageView i, int photoSizeInPixels) {
+		public PhotoToLoad(String u, ImageView i, int photoSizeInPixels,
+				ImageLoaderListener listener) {
 			url = u;
 			imageView = i;
 			this.photoSizeInPixels = photoSizeInPixels;
+			this.listener = listener;
 		}
 	}
 }

@@ -52,7 +52,7 @@ public class GCAccountStore {
 
     private static String APP_ID = null;
 
-    public static final int AUTHENTICATION_REQUEST_CODE = 423532;
+    public static final int AUTHENTICATION_REQUEST_CODE = 42353;
 
     private static final String TAG = GCAccountStore.class.getSimpleName();
 
