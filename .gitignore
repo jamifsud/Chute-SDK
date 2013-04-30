@@ -2,3 +2,4 @@
 bin/
 gen/
 *.class
+iOS/Chute-SDK.xcodeproj/xcuserdata/*

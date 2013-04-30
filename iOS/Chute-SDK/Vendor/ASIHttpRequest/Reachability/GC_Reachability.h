@@ -130,9 +130,9 @@ enum {
 };
 
 
-extern NSString *const kInternetConnection;
-extern NSString *const kLocalWiFiConnection;
-extern NSString *const kReachabilityChangedNotification;
+extern NSString *const kGcInternetConnection;
+extern NSString *const kGcLocalWiFiConnection;
+extern NSString *const kGcReachabilityChangedNotification;
 
 struct sockaddr_in;
 
